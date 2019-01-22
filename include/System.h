@@ -27,14 +27,18 @@
 #include<opencv2/core/core.hpp>
 
 #include "Tracking.h"
+#ifdef USE_PANGOLIN
 #include "FrameDrawer.h"
 #include "MapDrawer.h"
+#endif
 #include "Map.h"
 #include "LocalMapping.h"
 #include "LoopClosing.h"
 #include "KeyFrameDatabase.h"
 #include "ORBVocabulary.h"
+#ifdef USE_PANGOLIN
 #include "Viewer.h"
+#endif
 
 namespace ORB_SLAM2
 {
@@ -45,6 +49,7 @@ class Map;
 class Tracking;
 class LocalMapping;
 class LoopClosing;
+class MapDrawer;
 
 class System
 {
@@ -148,6 +153,8 @@ private:
     // a pose graph optimization and full bundle adjustment (in a new thread) afterwards.
     LoopClosing* mpLoopCloser;
 
+#ifdef USE_PANGOLIN
+#endif
     // The viewer draws the map and the current camera pose. It uses Pangolin.
     Viewer* mpViewer;
 

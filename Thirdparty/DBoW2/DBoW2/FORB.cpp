@@ -13,7 +13,9 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#if defined(__GNUC__) && defined(__linux__)
 #include <stdint-gcc.h>
+#endif
 
 #include "FORB.h"
 

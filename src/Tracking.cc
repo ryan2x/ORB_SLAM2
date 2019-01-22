@@ -431,7 +431,9 @@ void Tracking::Track()
             else
                 mVelocity = cv::Mat();
 
+#ifdef USE_PANGOLIN
             mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.mTcw);
+#endif
 
             // Clean VO matches
             for(int i=0; i<mCurrentFrame.N; i++)
@@ -554,7 +556,9 @@ void Tracking::StereoInitialization()
 
         mpMap->mvpKeyFrameOrigins.push_back(pKFini);
 
+#ifdef USE_PANGOLIN
         mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.mTcw);
+#endif
 
         mState=OK;
     }
@@ -729,7 +733,9 @@ void Tracking::CreateInitialMapMonocular()
 
     mpMap->SetReferenceMapPoints(mvpLocalMapPoints);
 
+#ifdef USE_PANGOLIN
     mpMapDrawer->SetCurrentCameraPose(pKFcur->GetPose());
+#endif
 
     mpMap->mvpKeyFrameOrigins.push_back(pKFini);
 
@@ -1507,9 +1513,11 @@ void Tracking::Reset()
     cout << "System Reseting" << endl;
     if(mpViewer)
     {
+#ifdef USE_PANGOLIN
         mpViewer->RequestStop();
         while(!mpViewer->isStopped())
             usleep(3000);
+#endif
     }
 
     // Reset Local Mapping
@@ -1545,8 +1553,10 @@ void Tracking::Reset()
     mlFrameTimes.clear();
     mlbLost.clear();
 
+#ifdef USE_PANGOLIN
     if(mpViewer)
         mpViewer->Release();
+#endif
 }
 
 void Tracking::ChangeCalibration(const string &strSettingPath)

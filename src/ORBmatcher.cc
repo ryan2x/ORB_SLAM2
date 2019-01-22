@@ -27,7 +27,9 @@
 
 #include "Thirdparty/DBoW2/DBoW2/FeatureVector.h"
 
+#if defined(__GNUC__) && defined(__linux__)
 #include<stdint-gcc.h>
+#endif
 
 using namespace std;
 

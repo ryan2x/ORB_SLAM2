@@ -25,7 +25,9 @@
 #include<opencv2/core/core.hpp>
 #include<opencv2/features2d/features2d.hpp>
 
+#ifdef USE_PANGOLIN
 #include"Viewer.h"
+#endif
 #include"FrameDrawer.h"
 #include"Map.h"
 #include"LocalMapping.h"
@@ -35,7 +37,9 @@
 #include"KeyFrameDatabase.h"
 #include"ORBextractor.h"
 #include "Initializer.h"
+#ifdef USE_PANGOLIN
 #include "MapDrawer.h"
+#endif
 #include "System.h"
 
 #include <mutex>
@@ -45,6 +49,7 @@ namespace ORB_SLAM2
 
 class Viewer;
 class FrameDrawer;
+class MapDrawer;
 class Map;
 class LocalMapping;
 class LoopClosing;

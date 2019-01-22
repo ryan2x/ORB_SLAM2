@@ -10,6 +10,10 @@ MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3 -march=native")
 
+if (APPLE)
+   set(CMAKE_MACOSX_RPATH 1)
+endif (APPLE)
+
 # Check C++11 or C++0x support
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -37,7 +41,10 @@ if(NOT OpenCV_FOUND)
 endif()
 
 find_package(Eigen3 3.1.0 REQUIRED)
-find_package(Pangolin REQUIRED)
+if (USE_PANGOLIN)
+   add_definitions(-DUSE_PANGOLIN)
+   find_package(Pangolin REQUIRED)
+endif (USE_PANGOLIN)
 
 include_directories(
 ${PROJECT_SOURCE_DIR}
@@ -46,7 +53,16 @@ ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
 )
 
+if(CMAKE_BUILD_TYPE EQUAL "RELEASE")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+endif()
+
+if (USE_PANGOLIN)
+   set(VIEWER_SRCS
+           src/MapDrawer.cc
+           src/Viewer.cc
+           )
+endif ()
 
 add_library(${PROJECT_NAME} SHARED
 src/System.cc
@@ -60,33 +76,39 @@ src/Converter.cc
 src/MapPoint.cc
 src/KeyFrame.cc
 src/Map.cc
-src/MapDrawer.cc
 src/Optimizer.cc
 src/PnPsolver.cc
 src/Frame.cc
 src/KeyFrameDatabase.cc
 src/Sim3Solver.cc
 src/Initializer.cc
-src/Viewer.cc
+${VIEWER_SRCS}
 )
+
+add_subdirectory(Thirdparty/DBoW2)
+add_subdirectory(Thirdparty/g2o)
 
 target_link_libraries(${PROJECT_NAME}
 ${OpenCV_LIBS}
 ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
-${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
-${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
+DBoW2
+g2o
 )
 
 # Build examples
 
+if(CMAKE_BUILD_TYPE EQUAL "RELEASE")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
+endif()
 
 add_executable(rgbd_tum
 Examples/RGB-D/rgbd_tum.cc)
 target_link_libraries(rgbd_tum ${PROJECT_NAME})
 
+if(CMAKE_BUILD_TYPE EQUAL "RELEASE")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo)
+endif()
 
 add_executable(stereo_kitti
 Examples/Stereo/stereo_kitti.cc)
@@ -97,7 +119,9 @@ Examples/Stereo/stereo_euroc.cc)
 target_link_libraries(stereo_euroc ${PROJECT_NAME})
 
 
+if(CMAKE_BUILD_TYPE EQUAL "RELEASE")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
+endif()
 
 add_executable(mono_tum
 Examples/Monocular/mono_tum.cc)
